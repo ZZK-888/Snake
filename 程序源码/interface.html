@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贪吃蛇 </title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .hide {
+            display: none;
+        }
+
+        #ranking {
+            width: 776px;
+            height: 551px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 这是首行栏 -->
+    <div class="first">
+        <audio controls preload autoplay loop muted>
+            <source src="musiv/m01.mp3">
+        </audio>
+        <!-- <button class="startBtn" onclick="start()">开始播放</button>
+        <button onclick="pause()">暂停</button>
+        <button onclick="reStart()">重新播放</button> -->
+    </div>
+    <!-- 这是选择框 -->
+    <div class="second">
+        <ul>
+            <li><a href="common.html">普通模式</a></li>
+            <li><a href="diffcult.html">困难模式</a></li>
+            <li><a href="hell.html">地狱模式</a></li>
+            <li><a href="javascript:void(0)" onclick="openPage()">排行榜</a></li>
+        </ul>
+    </div>
+
+    <iframe id="ranking" class="hide" src="./ranking.html" frameborder="0"></iframe>
+    <script>
+        function openPage() {
+            var ranking = document.querySelector('#ranking')
+            if (ranking.className.indexOf('hide') > -1) {
+                ranking.className = ranking.className.replace("hide", "")
+            } else {
+                ranking.className += 'hide'
+            }
+        }
+    </script>
+</body>
+
+</html>

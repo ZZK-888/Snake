@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排行榜</title>
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+            list-style: none;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        .bg {
+            width: 100%;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            z-index: 0;
+        }
+
+        .ranking {
+            padding: 10px;
+            width: 80%;
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            bottom: 100px;
+            overflow: auto;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .ranking li {
+            width: 100%;
+            padding-left: 90px;
+            height: 60px;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 100px;
+            border: 3px dashed #ae9085;
+            background-image: url('./images/bg.jpg');
+            background-repeat: repeat no-repeat;
+            color: #ffe4d9;
+            flex: 1;
+            font-weight: bold;
+        }
+
+        .ranking li+li {
+            margin-top: 25px;
+        }
+
+        .ranking li .head {
+            width: 70px;
+            height: 70px;
+            border-radius: 100%;
+            border: 4px solid #926858;
+            background-color: #ae9085;
+            position: absolute;
+            top: 50%;
+            left: -10px;
+            transform: translateY(-50%);
+            object-fit: cover;
+        }
+
+        .tab-box .tab-header {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab-box .tab-header .tab-title {
+            padding: 10px;
+            color: #905c35;
+            border-bottom: 4px solid transparent;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .tab-box .tab-header .tab-title.active {
+            border-bottom-color: #f77d3a;
+            color: #f77d3a;
+            /* background-color: #f77d3a; */
+        }
+
+        .tab-box .tab-header .tab-title:first-child {
+
+            border-radius: 10px 0 0 0;
+        }
+
+        .tab-box .tab-header .tab-title:last-child {
+            border-radius: 0 10px 0 0;
+        }
+        .ranking li .title{
+            font-size: 12px;
+            flex: 1;
+        }
+        .ranking li .title p {
+            font-size: 20px;
+            background-image: linear-gradient(to bottom, #fede6d, #FFB03A);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .close {
+            width: 86px;
+            height: 86px;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        .flex {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .flex .icon {
+            height: 32px;
+            margin-right: 6px;
+        }
+
+        .no-data,
+        .view {
+            text-align: center;
+            color: #ae9085;
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #ae9085;
+            border-radius: 50px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+            border-radius: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="close" onclick="closePage(this)"></div>
+    <img class="bg" src="./images/ranking.png" />
+    <div class="ranking tab-box">
+        <div class="tab-header">
+            <div class="tab-title active"> 普通模式</div>
+            <div class="tab-title"> 困难模式</div>
+            <div class="tab-title"> 地狱模式</div>
+        </div>
+        <ul id="ranking"></ul>
+    </div>
+    <script src="./js/jquery-2.1.4.min.js"></script>
+    <script>
+        var gameData = localStorage.getItem('gameData')
+        if (gameData) gameData = JSON.parse(gameData)
+        var active = 0
+        setInner(active)
+        function setInner(idx) {
+            $('.no-data').remove()
+            let type = ['普通模式', '困难模式', '地狱模式']
+            const key = type[idx]
+            if (!gameData) {
+                $('#ranking').html("")
+                $('.ranking').append('<div class="no-data">暂无数据</div>')
+                return
+            }
+            if (gameData[key] && gameData[key].length > 0) {
+                let html = '', arr = new Set(gameData[key]);
+                const data = Array.from(arr).sort((a, b) => {
+                    if (a.count == b.count && a.gameTime < b.gameTime) {
+                        return a.gameTime - b.gameTime
+                    } else if (a.count == b.count && a.gameTime == b.gameTime) {
+                        return b.food - a.food
+                    }
+                    return b.count - a.count
+                });
+                data.forEach((val, idx) => {
+                    html += getTemp(val)
+                })
+                document.getElementById("ranking").innerHTML = html
+            } else if (!gameData[key]) {
+                $('#ranking').html("")
+                $('.ranking').append('<div class="no-data">暂无数据</div>')
+                return
+            }
+        }
+        function getTemp(data) {
+            let gameTime = data.gameTime / 1000
+            if (gameTime / 60 >= 1) {
+                let m = Math.floor(gameTime / 60)
+                gameTime = m + '分' + parseInt(gameTime - (m * 60)) +'秒'
+            } else {
+                gameTime = gameTime.toFixed(2) + "秒"
+            }
+            return `<li>
+            <img src="${data.dieImg}" class="head"/>
+            <div class="title">
+                ${new Date(data.startTime).toLocaleString()}
+                <p>${data.count}</p>
+            </div>
+            <div class="flex">
+                  <img class="icon" src="./images/clock.png"/>
+                  ${gameTime}</div>
+            <div  class="flex">
+                <img class="icon" src="./images/food.png"/>
+                ${data.food}</div>
+        </li>`
+        }
+        function closePage(e) {
+            let parent = window.parent
+            parent.openPage()
+        }
+        //tab切换
+        $('.tab-box .tab-title ').on('click', function (e) {
+            const parent = $(this).parent(), idx = $(this).index()
+            parent.find(".tab-title").removeClass('active').eq(idx).addClass('active')
+            active = idx
+            setInner(idx)
+        })
+    </script>
+</body>
+
+</html>

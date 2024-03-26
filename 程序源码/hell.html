@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地狱模式</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            background: url(images/03.jpg) no-repeat;
+
+            background-size: cover;
+        }
+
+        .btnbox {
+            width: 200px;
+            height: 300px;
+            margin-top: 100px;
+            /* background-color: orange; */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+            position: fixed;
+            /* top: 50%;
+                    transform: translateY(-50%); */
+        }
+
+        .btnbox button {
+            width: 100px;
+            height: 50px;
+            font-size: 23px;
+            background-color: orange;
+            color: white;
+            border-radius: 30px;
+
+        }
+
+        .map {
+            width: 1000px;
+            height: 600px;
+            /* background: url(images/05.png.heic); */
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            box-shadow: 0px 0px 100px black inset, 0px 0px;
+        }
+
+        .map>div {
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            border-radius: 50%;
+            box-shadow: 0px 0px 10px yellow;
+        }
+
+        div .head {
+            background: repeating-radial-gradient(#ffc000, #ff4e00);
+        }
+
+        div .body {
+            background: repeating-radial-gradient(#fff369, #fa791a);
+        }
+
+        /* 食物 */
+        div .food {
+            background-image: repeating-radial-gradient(#54b604, #058518);
+            background-color: #058518;
+            animation: foodAnimate 1s linear infinite;
+        }
+
+        /* 零食 */
+        div .snacks {
+            background-image: repeating-radial-gradient(#fffb02, #fdf900);
+            background-color: #fffb02;
+            animation: snacksAnimate 1s linear infinite;
+        }
+
+        /* 药品 */
+        div .medicine {
+            background-image: repeating-radial-gradient(#fdfdfd, #effae7);
+            background-color: #fdfdfd;
+            animation: medicineAnimate 1s linear infinite;
+        }
+
+        @keyframes foodAnimate {
+            0% {
+                box-shadow: 0px 0px 10px white;
+            }
+
+            50% {
+                box-shadow: 0px 0px 100px white;
+            }
+
+            100% {
+                box-shadow: 0px 0px 10px white;
+            }
+        }
+
+        .score {
+            font-size: 25px;
+            color: white;
+        }
+
+        .score span {
+            color: red;
+            font-weight: bold;
+        }
+
+        .panbg {
+            width: 1000px;
+            height: 600px;
+            background: rgba(0, 0, 0, .814) url(images/07.jpg) no-repeat;
+            background-size: 1000px;
+            background-position: center;
+            position: fixed;
+            z-index: 999;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="panbg"></div>
+    <div class="btnbox">
+        <div class="score">score：<span>0</span></div>
+        <button id="start">start</button>
+        <button id="pause">pause</button>
+        <button id="restart">restart</button>
+        <button id="mybutton">goback</button>
+
+    </div>
+    <div class="map">
+    </div>
+
+    <audio src="musiv/m01.mp3" autoplay></audio>
+    <script src="./js/html2canvas.js"></script>
+    <script src="./js/food.js"></script>
+    <script src="./js/snake.js"></script>
+    <script src="./js/game_hell.js"></script>
+    <script>
+        const game = new Game(".map", ".score span", ".panbg")
+        //拿到按钮
+        const start = document.querySelector("#start")
+        const pause = document.querySelector("#pause")
+        const restart = document.querySelector("#restart")
+        const button = document.getElementById("mybutton");
+        button.addEventListener("click", function () {
+
+            window.location.href = "interface.html";
+        });
+        start.onclick = function () {
+            game.start()
+        }
+        pause.onclick = function () {
+            game.pause()
+        }
+        restart.onclick = function () {
+            game.restart()
+        }
+        //键盘监听 左37 上38 右39 下40
+        document.onkeydown = function (e) {
+            switch (e.keyCode) {
+                case 37:
+                    game.change("left")
+                    break;
+                case 38:
+                    game.change("top")
+                    break;
+                case 39:
+                    game.change("right")
+                    break;
+                case 40:
+                    game.change("bottom")
+                    break;
+                case 13:
+                    game.start()
+                    break;
+                case 32:
+                    game.pause()
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+    </script>
+</body>
+
+</html>
